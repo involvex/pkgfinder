@@ -1,0 +1,54 @@
+{
+	"name": "@involvex/pkgfinder",
+	"version": "0.1.0",
+	"description": "Interactive npm registry search TUI – search, inspect and open npm packages from your terminal",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/involvex/pkgfinder.git"
+	},
+	"license": "MIT",
+	"author": "involvex",
+	"type": "module",
+	"bin": {
+		"pkgfinder": "dist/cli.js"
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "bun build src/cli.tsx --outdir dist --target node",
+		"dev": "bun run --hot src/cli.tsx",
+		"format": "prettier --write .",
+		"lint": "eslint src test",
+		"lint:fix": "eslint src test --fix",
+		"start": "bun run src/cli.tsx",
+		"test": "bun test",
+		"typecheck": "tsc --noEmit"
+	},
+	"prettier": "@involvex/prettier-config",
+	"dependencies": {
+		"ink": "latest",
+		"ink-text-input": "latest",
+		"meow": "latest",
+		"react": "latest",
+		"react-devtools-core": "latest"
+	},
+	"devDependencies": {
+		"@eslint/js": "latest",
+		"@involvex/prettier-config": "^0.0.6",
+		"@types/bun": "latest",
+		"@types/react": "latest",
+		"eslint": "^10.8.1",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-react": "latest",
+		"eslint-plugin-react-hooks": "latest",
+		"globals": "latest",
+		"ink-testing-library": "^4.0.0",
+		"prettier": "^3.9.6",
+		"typescript": "^6",
+		"typescript-eslint": "^8.67.0"
+	},
+	"engines": {
+		"node": ">=18"
+	}
+}
