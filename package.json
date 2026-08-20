@@ -4,7 +4,7 @@
 	"description": "Interactive npm registry search TUI – search, inspect and open npm packages from your terminal",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/involvex/pkgfinder.git"
+		"url": "git+https://github.com/involvex/pkgfinder.git"
 	},
 	"license": "MIT",
 	"author": "involvex",
