@@ -1,6 +1,6 @@
 {
 	"name": "@involvex/pkgfinder",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Interactive npm registry search TUI – search, inspect and open npm packages from your terminal",
 	"repository": {
 		"type": "git",
