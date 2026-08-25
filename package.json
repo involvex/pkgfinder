@@ -16,6 +16,7 @@
 		"dist"
 	],
 	"scripts": {
+		"prebuild": "bun run lint:fix && bun run format && bun run typecheck",
 		"build": "bun build src/cli.tsx --outdir dist --target node",
 		"dev": "bun run --hot src/cli.tsx",
 		"format": "prettier --write .",

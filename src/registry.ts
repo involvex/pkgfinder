@@ -1,5 +1,6 @@
 import type {PackageInfo, SearchResult, SortMode} from './types.js'
 import {RegistryError} from './types.js'
+import {toBrowserUrl} from './url.js'
 
 const REGISTRY = 'https://registry.npmjs.org'
 const TIMEOUT_MS = 10_000
@@ -34,9 +35,9 @@ function asStringArray(value: unknown): string[] {
 }
 
 function repositoryUrl(value: unknown): string | undefined {
-	if (typeof value === 'string') return value
+	if (typeof value === 'string') return toBrowserUrl(value) || undefined
 	if (value && typeof value === 'object' && 'url' in value)
-		return asString(value.url)
+		return toBrowserUrl(asString(value.url)) || undefined
 	return undefined
 }
 
@@ -116,7 +117,7 @@ function parseSearch(data: unknown): {results: SearchResult[]; total: number} {
 			links: {
 				npm: asString(links?.npm) || `https://www.npmjs.com/package/${name}`,
 				homepage: asString(links?.homepage) || undefined,
-				repository: asString(links?.repository) || undefined,
+				repository: toBrowserUrl(asString(links?.repository)) || undefined,
 			},
 			downloads: typeof downloads?.monthly === 'number' ? downloads.monthly : 0,
 			score: typeof score?.final === 'number' ? score.final : 0,

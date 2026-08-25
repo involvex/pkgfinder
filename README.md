@@ -67,6 +67,10 @@ $ pkgfinder --json --sort popularity "state management"
 | `?`                 | Show/hide the help overlay                   |
 | `q` / `Ctrl+C`      | Quit                                         |
 
+Repository links stored in VCS form (`git+https://`, `git://`, `ssh://`,
+`git@host:repo`, `github:user/repo`, …) are automatically converted to plain
+`https://` web URLs so they always open in your default browser.
+
 ## Development
 
 ```bash

@@ -144,7 +144,7 @@ describe('getPackage', () => {
 			description: 'Full description of my-pkg',
 			license: 'MIT',
 			homepage: 'https://example.com/my-pkg',
-			repository: 'git+https://github.com/x/my-pkg.git',
+			repository: 'https://github.com/x/my-pkg',
 			maintainers: ['alice', 'bob'],
 			keywords: ['k1'],
 			dependencies: {react: '^18.0.0', 'is-number': '^7.0.0'},

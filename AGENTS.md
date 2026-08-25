@@ -104,6 +104,7 @@ pkgfinder/
 │   ├── app.tsx                  # TUI state machine: search ⇄ detail, keys, debounce
 │   ├── registry.ts              # npm registry search/get, retry, timeout, parsing
 │   ├── open.ts                  # cross-platform browser open (spawn, detached)
+│   ├── url.ts                   # toBrowserUrl: VCS URLs (git+https, ssh, …) → https:// web URLs
 │   ├── types.ts                 # SortMode, SearchResult, PackageInfo, RegistryError
 │   └── components/
 │       ├── SearchBar.tsx        # ink-text-input search field
