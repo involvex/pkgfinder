@@ -13,7 +13,9 @@
 		"pkgfinder": "dist/cli.js"
 	},
 	"files": [
-		"dist"
+		"dist",
+		"README.md",
+		"LICENSE"
 	],
 	"scripts": {
 		"prebuild": "bun run lint:fix && bun run format && bun run typecheck",
