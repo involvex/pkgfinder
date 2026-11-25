@@ -16,6 +16,7 @@ interface AppProps {
 	sort?: SortMode
 	limit?: number
 	debounceMs?: number
+	initialFrom?: number
 	onExit?: () => void
 }
 
@@ -24,13 +25,14 @@ export default function App({
 	sort = 'optimal',
 	limit = 20,
 	debounceMs = 300,
+	initialFrom = 0,
 	onExit = () => process.exit(0),
 }: AppProps) {
 	const [query, setQuery] = useState(initialQuery)
 	const [searchActive, setSearchActive] = useState(false)
 	const [results, setResults] = useState<SearchResult[]>([])
 	const [total, setTotal] = useState(0)
-	const [from, setFrom] = useState(0)
+	const [from, setFrom] = useState(initialFrom)
 	const [selectedIndex, setSelectedIndex] = useState(0)
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState<string | null>(null)
@@ -42,6 +44,7 @@ export default function App({
 
 	const requestId = useRef(0)
 	const lastSearched = useRef(initialQuery.trim())
+	const pageSearchInFlightRef = useRef(false)
 
 	const performSearch = useCallback(
 		async (value: string, offset = 0) => {
@@ -76,8 +79,8 @@ export default function App({
 
 	useEffect(() => {
 		if (!initialQuery.trim()) return
-		performSearch(initialQuery)
-	}, [initialQuery, performSearch])
+		performSearch(initialQuery, initialFrom)
+	}, [initialQuery, initialFrom, performSearch])
 
 	useEffect(() => {
 		if (!searchActive) return
@@ -106,16 +109,26 @@ export default function App({
 		}
 	}, [])
 
+	const hasMorePages =
+		results.length > 0 &&
+		(total > 0 ? from + results.length < total : results.length >= limit)
+
+	const isLastPage = total > 0 && from + limit >= total
+
 	const nextPage = useCallback(() => {
-		if (from + limit < total) {
-			performSearch(query, from + limit)
-		}
-	}, [from, limit, total, query, performSearch])
+		if (pageSearchInFlightRef.current || !hasMorePages) return
+		pageSearchInFlightRef.current = true
+		performSearch(query, from + limit).finally(() => {
+			pageSearchInFlightRef.current = false
+		})
+	}, [hasMorePages, from, limit, query, performSearch])
 
 	const prevPage = useCallback(() => {
-		if (from > 0) {
-			performSearch(query, Math.max(0, from - limit))
-		}
+		if (pageSearchInFlightRef.current || from === 0) return
+		pageSearchInFlightRef.current = true
+		performSearch(query, Math.max(0, from - limit)).finally(() => {
+			pageSearchInFlightRef.current = false
+		})
 	}, [from, limit, query, performSearch])
 
 	const openSelectedBrowser = useCallback((url: string | undefined) => {
@@ -217,7 +230,11 @@ export default function App({
 		}
 	})
 
-	const pageInfo = total > 0 ? `Page ${Math.floor(from / limit) + 1}` : ''
+	const totalPages = total > 0 ? Math.ceil(total / limit) : 0
+	const pageInfo =
+		total > 0
+			? `Page ${Math.floor(from / limit) + 1}${totalPages ? `/${totalPages}` : ''}`
+			: ''
 
 	return (
 		<Box flexDirection="column">
@@ -263,7 +280,7 @@ export default function App({
 									/>
 									<Text dimColor>
 										{results.length > 0
-											? `${total} results${pageInfo ? ` · ${pageInfo}` : ''}`
+											? `${total} results${pageInfo ? ` · ${pageInfo}` : ''}${isLastPage ? ' · Last page' : ''}`
 											: 'Press / to start searching.'}
 									</Text>
 								</>

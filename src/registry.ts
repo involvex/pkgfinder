@@ -1,3 +1,4 @@
+import pkg from '../package.json' with {type: 'json'}
 import type {PackageInfo, SearchResult, SortMode} from './types.js'
 import {RegistryError} from './types.js'
 import {toBrowserUrl} from './url.js'
@@ -5,7 +6,7 @@ import {toBrowserUrl} from './url.js'
 const REGISTRY = 'https://registry.npmjs.org'
 const TIMEOUT_MS = 10_000
 const RETRY_BACKOFF_MS = 500
-const VERSION = '0.1.0'
+const VERSION = pkg.version
 
 const SORT_MODES: SortMode[] = [
 	'optimal',
@@ -16,6 +17,19 @@ const SORT_MODES: SortMode[] = [
 
 function looksLikeHtml(body: string): boolean {
 	return /^\s*</.test(body)
+}
+
+const sleep = (ms: number): Promise<void> =>
+	new Promise(resolve => {
+		setTimeout(resolve, ms)
+	})
+
+function parseRetryAfterMs(response: Response): number | undefined {
+	const raw = response.headers.get('Retry-After')
+	if (!raw) return undefined
+	const seconds = Number(raw)
+	if (!Number.isFinite(seconds)) return undefined
+	return seconds * 1000
 }
 
 function asString(value: unknown): string {
@@ -61,6 +75,8 @@ async function requestJson(url: URL): Promise<unknown> {
 	if (!response.ok) {
 		throw new RegistryError(
 			`npm registry responded with HTTP ${response.status} ${response.statusText}.`,
+			2,
+			parseRetryAfterMs(response),
 		)
 	}
 
@@ -181,7 +197,7 @@ async function withRetry(fn: () => Promise<unknown>): Promise<unknown> {
 			/HTTP 429|HTTP 5\d\d/.test(error.message)
 
 		if (retryable) {
-			await Bun.sleep(RETRY_BACKOFF_MS)
+			await sleep(error.retryAfterMs ?? RETRY_BACKOFF_MS)
 			return await fn()
 		}
 		throw error

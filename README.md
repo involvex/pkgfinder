@@ -15,7 +15,7 @@ detail view, and one-key shortcuts to open a package on npm or in its repository
   homepage and repository links.
 - **Instant browser open** – `o` opens the npm page, `b` opens the repository/homepage.
 - **Sorting** – by optimal, quality, popularity or maintenance.
-- **Pagination** – `n` / `p` (or `PageUp` / `PageDown`) browse pages.
+- **Pagination** – `n` / `p` (or `PageUp` / `PageDown`) browse pages, with a `Page X/Y` indicator.
 - **JSON mode** – `--json` prints structured results for scripting/pipe workflows.
 - **Zero-config** – free public registry API, no API key, no account.
 
@@ -48,6 +48,8 @@ $ pkgfinder --json --sort popularity "state management"
   --json      Print search results as JSON and exit
   --sort      Sort by quality, popularity, maintenance or optimal (default)
   --limit     Number of results per page (default: 20)
+  --from      Start at this result offset
+  --page      Start at this 1-based page number (takes precedence over --from)
   --version   Show version
   --help      Show help
 ```

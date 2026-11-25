@@ -30,10 +30,12 @@ export interface PackageInfo {
 
 export class RegistryError extends Error {
 	readonly exitCode: number
+	readonly retryAfterMs?: number
 
-	constructor(message: string, exitCode = 2) {
+	constructor(message: string, exitCode = 2, retryAfterMs?: number) {
 		super(message)
 		this.name = 'RegistryError'
 		this.exitCode = exitCode
+		this.retryAfterMs = retryAfterMs
 	}
 }

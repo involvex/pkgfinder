@@ -242,6 +242,43 @@ describe('errors and retries', () => {
 		expect(calls).toBe(2)
 	})
 
+	test('retries after honoring Retry-After on 429', async () => {
+		let calls = 0
+		mockFetch(() => {
+			calls += 1
+			if (calls === 1)
+				return new Response('{}', {
+					status: 429,
+					headers: {'Retry-After': '0'},
+				})
+			return jsonResponse(searchPayload('retry'))
+		})
+
+		const {results} = await searchPackages('retry')
+
+		expect(calls).toBe(2)
+		expect(results[0]?.name).toBe('retry')
+	})
+
+	test('surfaces Retry-After seconds on the error', async () => {
+		let calls = 0
+		mockFetch(() => {
+			calls += 1
+			return new Response('{}', {
+				status: 429,
+				headers: {'Retry-After': '2'},
+			})
+		})
+
+		try {
+			await searchPackages('x')
+		} catch (error) {
+			expect(error).toBeInstanceOf(RegistryError)
+			expect((error as RegistryError).retryAfterMs).toBe(2000)
+		}
+		expect(calls).toBe(2)
+	})
+
 	test('errors carry exit code 2', async () => {
 		mockFetch(() => new Response('Error', {status: 500}))
 
